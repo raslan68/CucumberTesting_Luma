@@ -2,13 +2,17 @@ package com.bookit.step_definitions;
 
 import com.bookit.utilities.BookitAPIUtils;
 import com.bookit.utilities.ConfigurationReader;
+import com.bookit.utilities.DBUtils;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
 import io.restassured.http.ContentType;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import org.junit.Assert;
+
+import java.util.Map;
 
 import static io.restassured.RestAssured.*;
 public class ApiStepDefs {
@@ -16,10 +20,13 @@ public class ApiStepDefs {
 
     String token;
     Response response;
+    String emailGlobal;
     @Given("I logged Bookit api using {string} and {string}")
     public void i_logged_Bookit_api_using_and(String email, String password) {
 
         token = BookitAPIUtils.generateToken(email,password);
+        //gettin value from feautre file and assign to global variable
+        emailGlobal=email;
 
     }
 
@@ -41,6 +48,42 @@ public class ApiStepDefs {
 
         //verify status code is matching with feature file
         Assert.assertEquals(response.statusCode(),statusCode);
+
+    }
+
+    @Then("the information about current user from api and database should be match")
+    public void the_information_about_current_user_from_api_and_database_should_be_match() {
+
+        //GETTING INFORMATION FROM DATABASE
+        //query for user information
+        String query ="select id,firstname,lastname,role from users\n" +
+                "where email = '"+emailGlobal+"';";
+
+        Map<String, Object> dbInfoMap = DBUtils.getRowMap(query);
+        System.out.println("dbInfoMap = " + dbInfoMap);
+
+        long expectedId = (long) dbInfoMap.get("id");
+        String expectedFirstname = (String) dbInfoMap.get("firstname");
+        String expectedLastname = (String) dbInfoMap.get("lastname");
+        String expectedRole = (String) dbInfoMap.get("role");
+
+
+        //GETTING INFORMATION FROM API
+        JsonPath json = response.jsonPath();
+
+        long actualId = json.getLong("id");
+        String actualFirstname = json.getString("firstName");
+        String actualLastname= json.getString("lastName");
+        String actualRole = json.getString("role");
+
+
+        //VERIFY DATABASE AND API VALUES
+        Assert.assertEquals(actualId,expectedId);
+        Assert.assertEquals(actualFirstname,expectedFirstname);
+        Assert.assertEquals(actualLastname,expectedLastname);
+        Assert.assertEquals(actualRole,expectedRole);
+
+
 
     }
 
