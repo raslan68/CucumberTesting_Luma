@@ -1,5 +1,6 @@
 package com.bookit.step_definitions;
 
+import com.bookit.pages.SelfPage;
 import com.bookit.utilities.BookitAPIUtils;
 import com.bookit.utilities.ConfigurationReader;
 import com.bookit.utilities.DBUtils;
@@ -84,6 +85,45 @@ public class ApiStepDefs {
         Assert.assertEquals(actualRole,expectedRole);
 
 
+
+    }
+
+    @Then("UI,API and Database user information must be match")
+    public void ui_API_and_Database_user_information_must_be_match() {
+
+        //GETTING INFORMATION FROM DATABASE
+        //query for user information
+        String query ="select id,firstname,lastname,role from users\n" +
+                "where email = '"+emailGlobal+"';";
+
+        Map<String, Object> dbInfoMap = DBUtils.getRowMap(query);
+        System.out.println("dbInfoMap = " + dbInfoMap);
+
+        long expectedId = (long) dbInfoMap.get("id");
+        String expectedFirstname = (String) dbInfoMap.get("firstname");
+        String expectedLastname = (String) dbInfoMap.get("lastname");
+        String expectedRole = (String) dbInfoMap.get("role");
+
+        //GETTING INFORMATION FROM API
+        JsonPath json = response.jsonPath();
+
+        long actualId = json.getLong("id");
+        String actualFirstname = json.getString("firstName");
+        String actualLastname= json.getString("lastName");
+        String actualRole = json.getString("role");
+
+        //GETTING INFORMATION FROM UI
+        SelfPage selfPage = new SelfPage();
+        String actualFullnameUI = selfPage.name.getText();
+        String actualRoleUI = selfPage.role.getText();
+
+        //verify db vs ui
+        String expectedFullname = expectedFirstname+" "+expectedLastname;
+        //verfiy fullnames db vs ui
+        Assert.assertEquals(actualFullnameUI,expectedFullname);
+
+        //verify ui vs api (role)
+        Assert.assertEquals(actualRoleUI,actualRole);
 
     }
 
