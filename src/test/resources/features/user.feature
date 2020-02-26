@@ -1,3 +1,4 @@
+@smoke
 Feature: User Verification
 
 
