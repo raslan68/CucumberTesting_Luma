@@ -9,8 +9,5 @@
         <module name="summer2019-bookit-cucumber" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="summer2019-bookit-cucumber" target="1.8" />
-    </bytecodeTargetLevel>
   </component>
 </project>
