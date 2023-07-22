@@ -11,7 +11,7 @@ public class ContactUsPage extends AbstractClass{
         PageFactory.initElements(Driver.get(), this);
     }
 
-    @FindBy(xpath = "//a[normalize-space()='Contact Us']")
+    @FindBy(xpath = "//a[normalize-space()='Contact us']")
     public WebElement ContactUsButton;
 
     @FindBy(id = "name")
