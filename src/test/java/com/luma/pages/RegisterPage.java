@@ -42,4 +42,8 @@ public class RegisterPage extends AbstractClass{
     @FindBy(xpath = "//div[contains(text(),'Thank you for registering with Main Website Store.')]")
     public WebElement verificationRegister;
 
+    @FindBy(xpath = "//div[@class='message-error error message']")
+    public WebElement Verification_Not_Register;
+
+
 }
